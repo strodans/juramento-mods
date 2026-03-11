@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juramento Supremo de Moderación</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-main: #090011;
+      --bg-panel: rgba(19, 7, 32, 0.88);
+      --bg-panel-2: rgba(28, 11, 46, 0.92);
+      --line: rgba(196, 136, 255, 0.2);
+      --text: #ffffff;
+      --muted: #d6c6f3;
+      --accent: #9146ff;
+      --accent-2: #b06cff;
+      --accent-3: #ff7ad9;
+      --gold: #ffd166;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top center, rgba(145, 70, 255, 0.22), transparent 25%),
+        radial-gradient(circle at bottom left, rgba(255, 122, 217, 0.14), transparent 25%),
+        linear-gradient(135deg, #12001f 0%, #090011 55%, #150326 100%);
+      overflow-x: hidden;
+    }
+
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(145, 70, 255, 0.16), transparent 18%),
+        radial-gradient(circle at 90% 18%, rgba(176, 108, 255, 0.12), transparent 16%),
+        radial-gradient(circle at 50% 100%, rgba(255, 122, 217, 0.1), transparent 24%);
+      filter: blur(8px);
+    }
+
+    .container {
+      width: min(1000px, calc(100% - 36px));
+      margin: 34px auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 34px 28px 20px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(145, 70, 255, 0.14);
+      color: #eed9ff;
+      font-weight: 700;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 30px rgba(145,70,255,0.18);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2.1rem, 5.8vw, 4.1rem);
+      line-height: 1.05;
+      color: #d89bff;
+      text-shadow: 0 0 28px rgba(145, 70, 255, 0.25);
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 18px auto 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.8;
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .oath-panel {
+      padding: 30px;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .oath-panel::after {
+      content: "⚔️";
+      position: absolute;
+      right: 18px;
+      bottom: 6px;
+      font-size: 78px;
+      opacity: 0.07;
+      transform: rotate(-10deg);
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #f4deff;
+    }
+
+    .oath-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 22px;
+      padding: 22px 24px;
+    }
+
+    .oath-box p {
+      margin: 0 0 16px;
+      line-height: 1.9;
+      font-size: 1.07rem;
+      color: #fbf7ff;
+    }
+
+    .oath-box p:last-child {
+      margin-bottom: 0;
+      font-weight: 800;
+      color: #ffe2ff;
+    }
+
+    .form-panel {
+      margin-top: 22px;
+      padding: 28px;
+      background: var(--bg-panel-2);
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #f3e8ff;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(10, 8, 16, 0.88);
+      color: white;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(176,108,255,0.65);
+      box-shadow: 0 0 0 4px rgba(145, 70, 255, 0.18);
+    }
+
+    .hint {
+      color: #cdb7eb;
+      font-size: 0.92rem;
+      margin-top: -4px;
+      margin-bottom: 14px;
+    }
+
+    .canvas-wrap {
+      background: #ffffff;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 220px;
+      cursor: crosshair;
+      touch-action: none;
+      background:
+        linear-gradient(to bottom, #ffffff 0%, #fbfbfb 100%);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      flex: 1 1 220px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      box-shadow: 0 14px 32px rgba(145, 70, 255, 0.28);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #5d1d7f, #7f2ca6);
+      color: white;
+    }
+
+    .certificate {
+      display: none;
+      margin-top: 24px;
+      border-radius: 28px;
+      padding: 30px;
+      border: 1px solid rgba(255, 209, 102, 0.3);
+      background:
+        linear-gradient(180deg, rgba(255, 209, 102, 0.11), rgba(255, 209, 102, 0.03)),
+        rgba(27, 12, 38, 0.94);
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.35s ease;
+    }
+
+    .certificate.show {
+      display: block;
+    }
+
+    .cert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .certificate h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.7rem);
+      color: #ffe39a;
+    }
+
+    .seal {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-weight: 900;
+      font-size: 0.92rem;
+      color: #2b1700;
+      background: radial-gradient(circle at 30% 30%, #fff1bf, #ffd166 55%, #e6a600 100%);
+      box-shadow: inset 0 2px 10px rgba(255,255,255,0.35), 0 12px 24px rgba(0,0,0,0.24);
+    }
+
+    .certificate p {
+      margin: 0 0 12px;
+      line-height: 1.85;
+      color: #fff7df;
+      font-size: 1.05rem;
+    }
+
+    .mod-name {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 900;
+      color: white;
+      margin: 12px 0;
+      text-shadow: 0 0 24px rgba(255, 209, 102, 0.14);
+      word-break: break-word;
+    }
+
+    .signature-preview {
+      margin-top: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .signature-preview h3 {
+      margin: 0 0 12px;
+      color: #f7e8b1;
+      font-size: 1rem;
+    }
+
+    .signature-preview img {
+      display: block;
+      max-width: 100%;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      text-align: center;
+      color: #cbb9e6;
+      font-size: 0.92rem;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        width: min(100%, calc(100% - 20px));
+        margin: 18px auto;
+      }
+
+      .hero {
+        padding: 26px 10px 14px;
+      }
+
+      .oath-panel,
+      .form-panel,
+      .certificate {
+        padding: 20px;
+      }
+
+      canvas {
+        height: 180px;
+      }
+
+      .toolbar {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <div class="container">
+    <div class="hero">
+      <div class="hero-badge">👑 Ceremonia oficial del consejo del chat</div>
+      <h1>Juramento Supremo de Moderación</h1>
+      <p>
+        Antes de recibir el poder ancestral del timeout, del banhammer y de mirar el chat con autoridad moral dudosa,
+        toda persona aspirante a mod deberá sellar este compromiso con dignidad, criterio y cero abuso de poder.
+      </p>
+    </div>
+
+    <div class="panel oath-panel">
+      <h2 class="section-title">📜 Texto del juramento</h2>
+
+      <div class="oath-box">
+        <p>
+          Yo, aspirante a moderador o moderadora de este noble canal de Twitch, juro solemnemente cuidar el chat,
+          mantener el orden cuando reine el caos y usar mis poderes con sabiduría, templanza y el nivel justo de sospecha.
+        </p>
+
+        <p>
+          Prometo distinguir el meme sano del spam criminal, el chiste inocente del bait descarado,
+          y recordar que no todo mayúscula es entusiasmo: a veces también es guerra.
+        </p>
+
+        <p>
+          Juro no lanzar timeouts por venganza, no pelear con trolls nivel bronce como si fuera duelo de honor,
+          no borrar mensajes solo porque me dejaron en ridículo, y no abusar jamás del sagrado martillo del ban
+          salvo en casos de necesidad, justicia o cringe extremo.
+        </p>
+
+        <p>
+          Prometo apoyar al streamer incluso cuando no lea el chat, cuando pregunte algo que ya respondieron quince veces,
+          o cuando entre en pánico porque “se rompió todo” y al final era el micrófono muteado.
+        </p>
+
+        <p>
+          Acepto que ser mod no me convierte en emperador del canal, sino en guardián del orden,
+          inspector de links raros, detector oficial de bots y defensor supremo de la paz,
+          la buena onda y el spam controlado con fines humorísticos.
+        </p>
+
+        <p>
+          Y si algún día falto a este juramento, acepto con honor ser juzgado por el tribunal del chat,
+          expuesto en clips eternos, convertido en meme de temporada
+          y observado con decepción por los dioses del algoritmo.
+        </p>
+
+        <p>
+          Desde este momento, recibo el rol con humildad, responsabilidad y una peligrosa cercanía al botón de timeout.
+          Así lo juro.
+        </p>
+      </div>
+    </div>
+
+    <div class="panel form-panel">
+      <div class="field">
+        <label for="nombre">Nombre del mod</label>
+        <input id="nombre" type="text" placeholder="Escribe tu nombre o nick" maxlength="40" />
+      </div>
+
+      <div class="field">
+        <label for="firma">Firma del juramento</label>
+        <div class="hint">Firma con el mouse o con el dedo. La firma quedó ajustada para que siga bien el trazo.</div>
+
+        <div class="canvas-wrap">
+          <canvas id="firma"></canvas>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn-primary" type="button" onclick="confirmarJuramento()">Confirmar Juramento</button>
+        <button class="btn-secondary" type="button" onclick="limpiarFirma()">Limpiar firma</button>
+        <button class="btn-danger" type="button" onclick="reiniciarTodo()">Reiniciar todo</button>
+      </div>
+
+      <div class="footer-note">
+        Consejo legal del chat: firmar este documento no otorga salario, pero sí autoridad estética.
+      </div>
+    </div>
+
+    <div class="certificate" id="certificado">
+      <div class="cert-header">
+        <h2>🏆 Certificado Oficial de Moderación</h2>
+        <div class="seal">MOD<br>APROBADO</div>
+      </div>
+
+      <p>Por medio del presente documento absurdamente solemne, el consejo del chat reconoce oficialmente a:</p>
+      <div class="mod-name" id="nombreCertificado"></div>
+      <p>
+        como guardián del orden, protector del streamer, supervisor de mensajes sospechosos
+        y portador legítimo del banhammer ceremonial.
+      </p>
+      <p>
+        Desde hoy queda autorizado para vigilar el caos, impartir justicia moderada
+        y observar el chat con una mezcla equilibrada de paciencia, criterio y cansancio.
+      </p>
+
+      <div class="signature-preview" id="bloqueFirmaPreview" style="display:none;">
+        <h3>Firma registrada</h3>
+        <img id="firmaPreview" alt="Firma del mod" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("firma");
+    const ctx = canvas.getContext("2d");
+
+    let dibujando = false;
+    let firmaVacia = true;
+
+    function prepararCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      const imagenAnterior = document.createElement("canvas");
+      const imagenAnteriorCtx = imagenAnterior.getContext("2d");
+
+      if (canvas.width > 0 && canvas.height > 0) {
+        imagenAnterior.width = canvas.width;
+        imagenAnterior.height = canvas.height;
+        imagenAnteriorCtx.drawImage(canvas, 0, 0);
+      }
+
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "#111111";
+
+      if (imagenAnterior.width > 0 && imagenAnterior.height > 0) {
+        ctx.drawImage(
+          imagenAnterior,
+          0,
+          0,
+          imagenAnterior.width,
+          imagenAnterior.height,
+          0,
+          0,
+          rect.width,
+          rect.height
+        );
+      }
+    }
+
+    function obtenerPosicion(evento) {
+      const rect = canvas.getBoundingClientRect();
+
+      let clientX;
+      let clientY;
+
+      if (evento.touches && evento.touches.length > 0) {
+        clientX = evento.touches[0].clientX;
+        clientY = evento.touches[0].clientY;
+      } else if (evento.changedTouches && evento.changedTouches.length > 0) {
+        clientX = evento.changedTouches[0].clientX;
+        clientY = evento.changedTouches[0].clientY;
+      } else {
+        clientX = evento.clientX;
+        clientY = evento.clientY;
+      }
+
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function iniciarDibujo(evento) {
+      evento.preventDefault();
+      dibujando = true;
+      const pos = obtenerPosicion(evento);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function dibujar(evento) {
+      if (!dibujando) return;
+      evento.preventDefault();
+
+      const pos = obtenerPosicion(evento);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      firmaVacia = false;
+    }
+
+    function terminarDibujo(evento) {
+      if (!dibujando) return;
+      evento.preventDefault();
+      dibujando = false;
+      ctx.beginPath();
+    }
+
+    function limpiarFirma() {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      firmaVacia = true;
+    }
+
+    function reiniciarTodo() {
+      document.getElementById("nombre").value = "";
+      limpiarFirma();
+      document.getElementById("certificado").classList.remove("show");
+      document.getElementById("nombreCertificado").textContent = "";
+      document.getElementById("firmaPreview").src = "";
+      document.getElementById("bloqueFirmaPreview").style.display = "none";
+    }
+
+    function confirmarJuramento() {
+      const nombre = document.getElementById("nombre").value.trim();
+
+      if (nombre === "") {
+        alert("Debes escribir tu nombre o nick antes de jurar poder supremo.");
+        return;
+      }
+
+      if (firmaVacia) {
+        alert("Debes firmar el juramento. El consejo del chat exige una firma, aunque sea caótica.");
+        return;
+      }
+
+      document.getElementById("nombreCertificado").textContent = nombre;
+      document.getElementById("certificado").classList.add("show");
+
+      const firmaData = canvas.toDataURL("image/png");
+      document.getElementById("firmaPreview").src = firmaData;
+      document.getElementById("bloqueFirmaPreview").style.display = "block";
+
+      document.getElementById("certificado").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+    canvas.addEventListener("mousedown", iniciarDibujo);
+    canvas.addEventListener("mousemove", dibujar);
+    canvas.addEventListener("mouseup", terminarDibujo);
+    canvas.addEventListener("mouseleave", terminarDibujo);
+
+    canvas.addEventListener("touchstart", iniciarDibujo, { passive: false });
+    canvas.addEventListener("touchmove", dibujar, { passive: false });
+    canvas.addEventListener("touchend", terminarDibujo, { passive: false });
+    canvas.addEventListener("touchcancel", terminarDibujo, { passive: false });
+
+    window.addEventListener("load", prepararCanvas);
+    window.addEventListener("resize", prepararCanvas);
+  </script>
+</body>
+</html>
